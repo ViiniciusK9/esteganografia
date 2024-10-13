@@ -1,66 +1,90 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center" id="top"> 
+  <!--
+  <img src="./.github/app.gif" alt="Esteganografia" />
+  -->
+
+  &#xa0;
+
+  <!-- <a href="https://esteganografia.netlify.app">Demo</a> -->
+</div>
+
+<h1 align="center">Esteganografia</h1>
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img alt="Github top language" src="https://img.shields.io/github/languages/top/ViiniciusK9/esteganografia?color=56BEB8">
+
+  <img alt="Github language count" src="https://img.shields.io/github/languages/count/ViiniciusK9/esteganografia?color=56BEB8">
+
+  <img alt="Repository size" src="https://img.shields.io/github/repo-size/ViiniciusK9/esteganografia?color=56BEB8">
+
+  <img alt="License" src="https://img.shields.io/github/license/ViiniciusK9/esteganografia?color=56BEB8">
 </p>
 
-## About Laravel
+<!-- Status -->
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<h4 align="center"> 
+	🚧 Em construção... 🚧
+</h4> 
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<hr>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+<p align="center">
+  <a href="#dart-about">Sobre</a> &#xa0; | &#xa0; 
+  <a href="#sparkles-features">Features</a> &#xa0; | &#xa0;
+  <a href="#rocket-technologies">Tecnologias</a> &#xa0; | &#xa0;
+  <a href="#white_check_mark-requirements">Requisitos</a> &#xa0; | &#xa0;
+  <a href="#checkered_flag-starting">Começando</a> &#xa0; | &#xa0;
+  <a href="#memo-license">Licença</a> &#xa0; | &#xa0;
+  <a href="https://github.com/ViiniciusK9" target="_blank">Autor</a>
+</p>
 
-## Learning Laravel
+<br>
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## :dart: Sobre ##
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Esta aplicação web foi desenvolvida como prática para a disciplina de Segurança e Auditoria de Sistemas, explorando a técnica de esteganografia — um método de ocultar informações dentro de arquivos de imagem. O projeto permite que o usuário crie imagens com textos ocultos, recupere o texto escondido de imagens e visualize, lado a lado, as versões originais e modificadas para verificar se há diferenças visíveis.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+O desenvolvimento foi feito utilizando o framework Laravel, com foco em fornecer uma interface web simples e eficaz para realizar essas operações. A codificação e decodificação das mensagens nas imagens foram baseadas no projeto do professor Bruno Lopes, disponível em seu repositório [Shadow](https://github.com/brunolopesjn/shadow), que implementa uma ferramenta de linha de comando (CLI) em PHP para realizar esteganografia em imagens PNG. Este projeto está licenciado sob a licença MIT, e foi uma base fundamental para a implementação das funcionalidades de esteganografia nesta aplicação.
 
-## Laravel Sponsors
+## :sparkles: Features ##
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- :heavy_check_mark: Criar uma imagem com texto escondido
+- :heavy_check_mark: Decodificar uma imagem que passou pela codificação anterior e recuperar a mensagem escondida
+- :heavy_multiplication_x: (Em desenvolvimento) Visualizar as imagens antes e depois de serem modificadas, lado a lado
 
-### Premium Partners
+## :rocket: Tecnologias ##
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+As seguintes ferramentas foram utilizadas neste projeto:
 
-## Contributing
+🚧 Em construção... 🚧
+<!--
+- [Expo](https://expo.io/)
+- [Node.js](https://nodejs.org/en/)
+- [React](https://pt-br.reactjs.org/)
+- [React Native](https://reactnative.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+ -->
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## :white_check_mark: Requisitos ##
 
-## Code of Conduct
+Before starting :checkered_flag:, you need to have [Git](https://git-scm.com) and [Node](https://nodejs.org/en/) installed.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## :checkered_flag: Começando ##
 
-## Security Vulnerabilities
+```bash
+# Clone this project
+$ git clone https://github.com/ViiniciusK9/esteganografia
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 🚧 Em construção... 🚧
 
-## License
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## :memo: Licença ##
+
+Este projeto está sob licença do MIT. Para mais detalhes, veja o arquivo [LICENSE](LICENSE.md).
+
+Feito com :heart: por <a href="https://github.com/ViiniciusK9" target="_blank">Vinicius Koncicoski</a>
+
+&#xa0;
+
+<a href="#top">Voltar ao topo</a>
