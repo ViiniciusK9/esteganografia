@@ -75,6 +75,16 @@ Before starting :checkered_flag:, you need to have [Git](https://git-scm.com) an
 # Clone this project
 $ git clone https://github.com/ViiniciusK9/esteganografia
 
+$ cd esteganografia
+
+$ composer install
+
+$ npm install
+
+$ npm run build
+
+$ php artisan serve
+
 # 🚧 Em construção... 🚧
 
 ```
