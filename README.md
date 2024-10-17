@@ -77,6 +77,8 @@ $ git clone https://github.com/ViiniciusK9/esteganografia
 
 $ cd esteganografia
 
+$ sudo apt install php8.2-gd # sudo apt install php-gd
+
 $ composer install
 
 $ npm install
