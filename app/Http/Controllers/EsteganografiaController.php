@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Sleep;
 use Illuminate\View\View;
 
 class EsteganografiaController extends Controller
@@ -30,19 +30,25 @@ class EsteganografiaController extends Controller
             ]
         );
 
-        $img = $request->file('file');
-        $fileName = $img->store();
+        $image = $request->file('file');
+        $fileName = $image->store();
         $text = $request->get('text');
-
 
         // Isso esta bem feio, mas está funcionando temporariamente =D
         $filePath = $this->getPublicStoragePath($fileName);
+        $filePathModified = $this->getPublicStoragePath("modified/$fileName");
+        $fileNameModified = "modified/$fileName";    
 
-        $img_mod = $this->encodeMessage($filePath, $text);
+        $this->encodeMessage($filePath, $filePathModified, $text);
         
-        Storage::move($fileName, $fileName);
+        Storage::move($fileNameModified, $fileNameModified);
+
+        $imageStore = new Image;
+        $imageStore->image_path = $fileName;
+        $imageStore->modified_image_path = $fileNameModified;
+        $imageStore->save();
         
-        return Storage::download($fileName);
+        return Storage::download($fileNameModified);
     }
 
     public function decodeForm(): View
@@ -52,169 +58,139 @@ class EsteganografiaController extends Controller
 
     public function decodeImage(Request $request)
     {
-        $img = $request->file('file');
-        $fileName = $img->store('imagens', 'public');
+        $image = $request->file('file');
+        $fileName = $image->store('imagens', 'public');
         $filePath = $this->getPublicStoragePath($fileName);
         $message = $this->decodeMessage($filePath);
+
+        Storage::delete($fileName);
 
         return view('esteganografia.decode-show', ['decodeMessage' => $message]);
     }
 
-    private function getPublicStoragePath(string $filename): string
+    private function getPublicStoragePath(string $fileName): string
     {
-        return storage_path('/app/public/' . $filename);
+        return storage_path('/app/public/' . $fileName);
     }
 
-    private function encodeMessage(string $filename, string $message): string
+    private function encodeMessage(string $fileName, string $filePathModified, string $message): void
     {
-        $mensagem = $message; 
+        $messageSize = strlen($message) + 4;
+        $sizeEncoded = pack('N', $messageSize);
+        $codedMessage = $sizeEncoded . $message;
 
-        // Gera um novo texto adicionando o tamanho do mesmo no cabeçalho
-        $tamanhoMensagem = strlen($mensagem) + 4;
-        $tamanhoCodificado = pack('N', $tamanhoMensagem);
-        $mensagemCodificada = $tamanhoCodificado . $mensagem;
+        $image = imagecreatefrompng($fileName);
 
-        // Carrega a imagem na memória
-        $im = imagecreatefrompng($filename);
-
-        // Converte a mensagem em uma sequência de bits
         $bits = '';
-        foreach (str_split($mensagemCodificada) as $char) {
+        foreach (str_split($codedMessage) as $char) {
             $bits .= str_pad(decbin(ord($char)), 8, '0', STR_PAD_LEFT);
         }
 
-        // Recupera o tamanho da imagem
-        $width = imagesx($im);
-        $height = imagesy($im);
+        $width = imagesx($image);
+        $height = imagesy($image);
 
-        // Verifica se a mensagem é maior do que a capacidade de armazenamento da imagem.
-        // Caso positivo, encerra o programa.
         if (strlen($bits) > $width * $height) {
-            return "O texto é maior do que a capacidade de armazenamento da imagem\n";
+            return;
         }
 
-        // Cria uma nova imagem de mesmo tamanho
-        $new_im = imagecreatetruecolor($width, $height);
+        $newImage = imagecreatetruecolor($width, $height);
 
-        // Variável de controle de acesso ao array da sequência de bits
         $bitIndex = 0;
 
         for ($i = 0; $i < $width; $i++) {
             for ($j = 0; $j < $height; $j++) {
 
-                // Recupera o pixel i,j da imagem 
-                $pixel = imagecolorat($im, $i, $j);
+                $pixel = imagecolorat($image, $i, $j);
 
-                // Extrai os valores de vermelho, verde e azul do pixel
                 $red = ($pixel >> 16) & 0xFF;
                 $green = ($pixel >> 8) & 0xFF;
                 $blue = $pixel & 0xFF;
 
-                // Verifica se ainda exitem bits a serem armazenados
                 if ($bitIndex < strlen($bits)) {
-
-                    // Gera os novos valores de vermelho, verde e azul
-                    $new_red =   ($red   & 0xFE) | ($bits[$bitIndex] ?? '0');
-                    $new_green = ($green & 0xFE) | ($bits[$bitIndex + 1] ?? '0');
-                    $new_blue =  ($blue  & 0xFE) | ($bits[$bitIndex + 2] ?? '0');
+                    $newRed =   ($red   & 0xFE) | ($bits[$bitIndex] ?? '0');
+                    $newGreen = ($green & 0xFE) | ($bits[$bitIndex + 1] ?? '0');
+                    $newBlue =  ($blue  & 0xFE) | ($bits[$bitIndex + 2] ?? '0');
                     $bitIndex += 3;
 
-                    // Gera um novo pixel com os valores das novas componentes de vermelho, verde e azul
-                    $new_pixel = ($new_red << 16) | ($new_green << 8) | $new_blue;
+                    $newPixel = ($newRed << 16) | ($newGreen << 8) | $newBlue;
 
-                    // Atribui o novo pixel na imagem de saída
-                    imagesetpixel($new_im, $i, $j, $new_pixel);
+                    imagesetpixel($newImage, $i, $j, $newPixel);
 
-                    // Pula para a próxima iteração
                     continue;
                 }
 
-                // Atribui o pixel atual na imagem de saída
-                imagesetpixel($new_im, $i, $j, $pixel);
+                imagesetpixel($newImage, $i, $j, $pixel);
             }
         }
 
-        // Gera a imagem final com a mensagem codificada
-        imagepng($new_im, $filename);
-        //Storage::put($filename, $new_im);
-        return "ok";
+        imagepng($newImage, $filePathModified);
+        return;
     }
 
     private function decodeMessage(string $filePath): string
     {
-        // Carrega a imagem na memória
-        $im = imagecreatefrompng($filePath);
+        $image = imagecreatefrompng($filePath);
 
-        // Recupera o tamanho da imagem
-        $width = imagesx($im);
-        $height = imagesy($im);
+        $width = imagesx($image);
+        $height = imagesy($image);
 
-        $tamanhoMensagem = 0;
+        $messageSize = 0;
 
-        // Percorra os 11 primeiros pixels da imagem para extrair o tamanho do texto
         for ($j = 0; $j < 11; $j++) {
-            $pixel = imagecolorat($im, 0, $j); // Suponha que os bytes do tamanho estejam nos primeiros 4 pixels na primeira linha da imagem
-            $r = ($pixel >> 16) & 0x01;
-            $g = ($pixel >> 8) & 0x01;
-            $b = $pixel & 0x01;
+            $pixel = imagecolorat($image, 0, $j);
+            $red = ($pixel >> 16) & 0x01;
+            $green = ($pixel >> 8) & 0x01;
+            $blue = $pixel & 0x01;
 
-            $tamanhoMensagem = ($tamanhoMensagem << 1) | $r;
-            $tamanhoMensagem = ($tamanhoMensagem << 1) | $g;
-            $tamanhoMensagem = ($tamanhoMensagem << 1) | $b;
+            $messageSize = ($messageSize << 1) | $red;
+            $messageSize = ($messageSize << 1) | $green;
+            $messageSize = ($messageSize << 1) | $blue;
         }
 
-        // Como foi lido um bit a mais para computar o tamanho, o mesmo deve ser retirado
-        $tamanhoMensagem = $tamanhoMensagem >> 1;
-
-        // Variável que armazena o byte de texto
+        $messageSize = $messageSize >> 1;
         $byte = 0;
-
-        // Variável de contagem de bits lidos
         $bitsCount = 0;
-
-        // Variável que armazena a mensagem
-        $mensagem = "";
+        $message = "";
 
         for ($i = 0; $i < $width; $i++) {
             for ($j = 0; $j < $height; $j++) {
 
-                // Verifique se a mensagem já foi totalmente decodificada
-                if (strlen($mensagem) >= $tamanhoMensagem) {
-                    break 2; // Saia dos loops
+                if (strlen($message) >= $messageSize) {
+                    break 2;
                 }
 
-                // Recupera o pixel i,j da imagem 
-                $pixel = imagecolorat($im, $i, $j);
+                $pixel = imagecolorat($image, $i, $j);
 
-                // Extrai os valores de vermelho, verde e azul do pixel
                 $red = ($pixel >> 16) & 0x01;
                 $green = ($pixel >> 8) & 0x01;
                 $blue = $pixel & 0x01;
 
-                // Armazena no byte os bits menos significativos das componentes do pixel
                 $byte = ($byte << 1) | $red;
                 $byte = ($byte << 1) | $green;
                 $byte = ($byte << 1) | $blue;
                 $bitsCount += 3;
 
-                // Se temos mais de 8 bits lidos, extrair caractere
                 if ($bitsCount >= 8) {
-
-                    // Diferença de bits que excedeu a 8
                     $offset = $bitsCount - 8;
-
-                    // Retira os bits excedentes da porção menos significativa e converte para caractere
-                    $mensagem .= chr($byte >> $offset);
-
-                    // Retira os bits já convertidos para caractere
+                    $message .= chr($byte >> $offset);
                     $byte = $byte & (0xFF >> (8 - $offset));
-
-                    // Ajusta o contador de bits retirando oito unidades
                     $bitsCount -= 8;
                 }
             }
         }
 
-        return substr($mensagem, 4);
+        return substr($message, 4);
+    }
+
+    public function show($id)
+    {
+        $image = Image::findOrFail($id);
+        return view('esteganografia.show', compact('image'));
+    }
+
+    public function list()
+    {
+        $data['images'] = Image::all(); 
+        return view('esteganografia.list', $data);
     }
 }
