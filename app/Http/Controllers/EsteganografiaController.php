@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -35,12 +36,19 @@ class EsteganografiaController extends Controller
 
         // Isso esta bem feio, mas está funcionando temporariamente =D
         $filePath = $this->getPublicStoragePath($fileName);
+        $filePathModified = $this->getPublicStoragePath("modified/$fileName");
+        $fileNameModified = "modified/$fileName";    
 
-        $imgMod = $this->encodeMessage($filePath, $text);
+        $this->encodeMessage($filePath, $filePathModified, $text);
         
-        Storage::move($fileName, $fileName);
+        Storage::move($fileNameModified, $fileNameModified);
+
+        $imageStore = new Image;
+        $imageStore->image_path = $fileName;
+        $imageStore->modified_image_path = $fileNameModified;
+        $imageStore->save();
         
-        return Storage::download($fileName);
+        return Storage::download($fileNameModified);
     }
 
     public function decodeForm(): View
@@ -55,6 +63,8 @@ class EsteganografiaController extends Controller
         $filePath = $this->getPublicStoragePath($fileName);
         $message = $this->decodeMessage($filePath);
 
+        Storage::delete($fileName);
+
         return view('esteganografia.decode-show', ['decodeMessage' => $message]);
     }
 
@@ -63,7 +73,7 @@ class EsteganografiaController extends Controller
         return storage_path('/app/public/' . $fileName);
     }
 
-    private function encodeMessage(string $fileName, string $message): void
+    private function encodeMessage(string $fileName, string $filePathModified, string $message): void
     {
         $messageSize = strlen($message) + 4;
         $sizeEncoded = pack('N', $messageSize);
@@ -113,7 +123,7 @@ class EsteganografiaController extends Controller
             }
         }
 
-        imagepng($newImage, $fileName);
+        imagepng($newImage, $filePathModified);
         return;
     }
 
@@ -170,5 +180,17 @@ class EsteganografiaController extends Controller
         }
 
         return substr($message, 4);
+    }
+
+    public function show($id)
+    {
+        $image = Image::findOrFail($id);
+        return view('esteganografia.show', compact('image'));
+    }
+
+    public function list()
+    {
+        $data['images'] = Image::all(); 
+        return view('esteganografia.list', $data);
     }
 }

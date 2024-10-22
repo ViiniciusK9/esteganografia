@@ -25,8 +25,8 @@
                             href="{{ route('decode-form') }}">Decodificar</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ Route::is('show') ? 'active' : '' }}"
-                            href="{{ route('show') }}">Vizualizar lado a lado</a>
+                        <a class="nav-link {{ Route::is('list') ? 'active' : '' }}"
+                            href="{{ route('list') }}">Vizualizar lado a lado</a>
                     </li>
                 </ul>
             </div>
